@@ -18,10 +18,16 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'runoshun/tscompletejob'
 Plug 'prabirshrestha/asyncomplete-tscompletejob.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
-
+Plug 'ryanoasis/vim-devicons'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
 
+set encoding=UTF-8
 syntax on
 set ignorecase
 set smartcase
@@ -47,105 +53,45 @@ let mapleader=" "
 imap jj <Esc>
 map <leader>xx <plug>NERDCommenterToggle
 nmap <S-Tab> :NERDTreeToggle<CR>
-noremap <c-p> :Files <CR>
 
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 
 colorscheme janah
 
-function LintAndSave()
-  wall
-  "ALEFix
-  echo "saved"
-endfunction
+nmap <leader>l :wall<cr>
 
-nmap <leader>l :call LintAndSave() <cr>
-
-function EscActions() 
+function EscActions()
   call feedkeys( ":nohlsearch\<CR>" )
   wall
-  lclose
-  echo "Saved"
 endfunction
 
 nnoremap <Esc><Esc> :call EscActions() <cr>
 
 set autowriteall
 
-let g:fzf_layout = { 'window': { 'width': 1, 'height': 1 } }
-let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4"
-
-let g:fzf_preview_window = 'right:60%'
-command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'COLORTERM=truecolor bat -p --color  always {}']}, <bang>0)
-
-function! s:getVisualSelection()
-    let [line_start, column_start] = getpos("'<")[1:2]
-    let [line_end, column_end] = getpos("'>")[1:2]
-    let lines = getline(line_start, line_end)
-
-    if len(lines) == 0
-        return ""
-    endif
-
-    let lines[-1] = lines[-1][:column_end - (&selection == "inclusive" ? 1 : 2)]
-    let lines[0] = lines[0][column_start - 1:]
-
-    return join(lines, "\n")
-endfunction
-
-vnoremap <silent><leader>f <Esc>:Ag <C-R>=<SID>getVisualSelection()<CR><CR>
 autocmd BufNewFile,BufRead .eslintrc set syntax=json
 autocmd BufNewFile,BufRead *.js set syntax=typescriptreact
 
-set laststatus=2
-
-set statusline=
-set statusline+=%f
-set statusline+=\ %=%{fugitive#head()}
-set statusline+=\ [line\ %l\/%L]          
-
-let g:ale_fixers = {
+let b:ale_fixers = {
  \ 'typescript': ['eslint'],
- \ 'javascript': ['eslint']
+ \ 'javascript': ['eslint'],
+ \ 'typescriptreact': ['eslint'],
  \ }
 
-let g:ale_disable_lsp = 1
+let b:ale_linters = {
+ \ 'typescript': ['eslint'],
+ \ 'javascript': ['eslint'],
+ \ 'typescriptreact': ['eslint']
+ \ }
+
+""let g:ale_disable_lsp = 1
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '--'
 let g:ale_fix_on_save = 1
-let g:ale_fixers = ['eslint']
+let g:ale_javascript_eslint_executable = 'eslint_d'
+let g:ale_javascript_eslint_use_global = 1
 
-autocmd CursorMoved * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
 highlight ALEError ctermbg=none gui=underline guisp=red
-
-" Progress bar start
-func! STL()
-  let stl = '%f [%{(&fenc==""?&enc:&fenc).((exists("+bomb") && &bomb)?",B":"")}%M%R%H%W] %y [%l/%L,%v] [%p%%]'
-  let barWidth = &columns - 65 " <-- wild guess
-  let barWidth = barWidth < 3 ? 3 : barWidth
-
-  if line('$') > 1
-    let progress = (line('.')-1) * (barWidth-1) / (line('$')-1)
-  else
-    let progress = barWidth/2
-  endif
-
-  " line + vcol + %
-  let pad = strlen(line('$'))-strlen(line('.')) + 3 - strlen(virtcol('.')) + 3 - strlen(line('.')*100/line('$'))
-  let bar = repeat(' ',pad).' [%1*%'.barWidth.'.'.barWidth.'('
-        \.repeat('-',progress )
-        \.'%2*0%1*'
-        \.repeat('-',barWidth - progress - 1).'%0*%)%<]'
-
-  return stl.bar
-endfun
-
-hi def link User1 DiffAdd
-hi def link User2 DiffDelete
-set stl=%!STL()
-
-" Progress bar end
 
 " start lsp
 if executable('pyls')
@@ -157,49 +103,23 @@ if executable('pyls')
         \ })
 endif
 
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gs <plug>(lsp-document-symbol-search)
-    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-    nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> <leader>rn <plug>(lsp-rename)
-    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
-    nmap <buffer> K <plug>(lsp-hover)
-    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
-    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
-
-    let g:lsp_format_sync_timeout = 1000
-    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
-    
-    " refer to doc to add more commands
-endfunction
-
-augroup lsp_install
-    au!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
-
-" end lsp
 
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 
-nmap <Tab><Tab> :Buffers<CR>
+set guifont=DroidSansMono\ Nerd\ Font:h11
 
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
-call asyncomplete#register_source(asyncomplete#sources#tscompletejob#get_source_options({
-    \ 'name': 'tscompletejob',
-    \ 'allowlist': ['typescript'],
-    \ 'completor': function('asyncomplete#sources#tscompletejob#completor'),
-    \ }))
+nnoremap <Tab><Tab> <cmd>Telescope buffers<cr>
+noremap <c-p> <cmd>Telescope find_files<CR>
 
-imap <c-space> <Plug>(asyncomplete_force_refresh)
+lua require('telescope').setup{ defaults = { file_ignore_patterns = {"node_modules", "build", "gradle", "ios"} } }
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#ale#enabled = 1
+
 
