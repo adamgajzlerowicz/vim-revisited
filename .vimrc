@@ -15,9 +15,11 @@ Plug 'preservim/nerdtree'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
 Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'runoshun/tscompletejob'
 Plug 'prabirshrestha/asyncomplete-tscompletejob.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+" Plug 'runoshun/tscompletejob'
 Plug 'ryanoasis/vim-devicons'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-lua/plenary.nvim'
@@ -28,7 +30,10 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'jacoborus/tender.vim'
 Plug 'doums/darcula'
 Plug 'nvim-telescope/telescope-project.nvim'
-
+Plug 'akinsho/toggleterm.nvim'
+Plug 'joshdick/onedark.vim'
+Plug 'sheerun/vim-polyglot'
+Plug 'liuchengxu/vista.vim'
 
 
 call plug#end()
@@ -43,12 +48,16 @@ set nobackup
 set nospell
 set nowritebackup
 set smarttab
+set nocompatible
 set cindent
-set nowrap
+" set nowrap
 set tabstop=2
+set softtabstop=2
 set noswapfile
-set hlsearch
 set shiftwidth=2
+
+" set hlsearch
+" set shiftwidth=2
 set expandtab
 set cursorline
 au FocusLost * silent! wa
@@ -59,6 +68,10 @@ imap jj <Esc>
 map <leader>xx <plug>NERDCommenterToggle
 nmap gd :LspDeclaration <cr>
 nmap gu :LspReferences <cr>
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
 highlight lspReference ctermfg=white guifg=white ctermbg=black guibg=black
 
 
@@ -72,7 +85,40 @@ endfunction
 
 nmap <S-Tab> :call HandleOpen() <CR>
 
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+" let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+
+lua << EOF
+
+require('telescope')
+  .setup{ 
+    defaults = { file_ignore_patterns = {"node_modules", "build", "gradle", "ios"} },
+    extensions = { 
+      project = {}
+    }
+  }
+
+require'telescope'.load_extension('project')
+
+local actions = require('telescope.actions')require('telescope').setup{ pickers = { buffers = { sort_lastused = true } } }
+
+require("toggleterm").setup{ }
+
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+    custom_captures = {
+      -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
+      ["foo.bar"] = "Identifier",
+    },
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}
+
+EOF
 
 
 " colors
@@ -137,9 +183,10 @@ if executable('pyls')
 endif
 
 
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+" inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+
 
 set guifont=DroidSansMono\ Nerd\ Font:h11
 
@@ -147,25 +194,14 @@ nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap <leader>ko :lua require'telescope'.extensions.project.project{}<cr>
 
 nnoremap <Tab><Tab> <cmd>Telescope buffers<cr>
 noremap <c-p> <cmd>Telescope find_files<CR>
+nnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
 
-lua << EOF
 
-require('telescope')
-  .setup{ 
-    defaults = { file_ignore_patterns = {"node_modules", "build", "gradle", "ios"} },
-    extensions = { 
-      project = {}
-    }
-  }
 
-require'telescope'.load_extension('project')
-
-local actions = require('telescope.actions')require('telescope').setup{ pickers = { buffers = { sort_lastused = true } } }
-
-EOF
 
 
 let g:airline#extensions#tabline#enabled = 1
@@ -176,5 +212,28 @@ let g:go_highlight_methods = 1
 let g:go_highlight_functions = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
+
+
+
+let g:startify_lists = [
+   \ { 'type': 'sessions',  'header': ['   Sessions']       },
+   \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
+   \ { 'type': 'commands',  'header': ['   Commands']       },
+   \ ]
+
+let g:startify_bookmarks = [
+  \ { 'agilix': '~/projects/agilix'},
+  \ { 'vim-config': '~/vim/.vimrc'},
+  \ ]
+
+let g:startify_session_persistence = 1
+let g:startify_session_autoload = 1
+let g:startify_session_delete_buffers = 1
+let g:startify_change_to_vcs_root = 1
+let g:startify_enable_special = 0
+let g:startify_session_dir = '~/.config/nvim/session'
+
+
+nmap <leader>o :Startify<cr>
 
 
