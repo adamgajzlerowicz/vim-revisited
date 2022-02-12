@@ -19,7 +19,7 @@ Plug 'prabirshrestha/asyncomplete-tscompletejob.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
-" Plug 'runoshun/tscompletejob'
+Plug 'runoshun/tscompletejob'
 Plug 'ryanoasis/vim-devicons'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-lua/plenary.nvim'
@@ -66,7 +66,7 @@ let mapleader=" "
 
 imap jj <Esc>
 map <leader>xx <plug>NERDCommenterToggle
-nmap gd :LspDeclaration <cr>
+nmap gd :LspDefinition <cr>
 nmap gu :LspReferences <cr>
 imap <c-space> <Plug>(asyncomplete_force_refresh)
 " inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
