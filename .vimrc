@@ -177,10 +177,7 @@ set guifont=DroidSansMono\ Nerd\ Font:h11
 
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-" nnoremap <leader>ko :lua require'telescope'.extensions.project.project{}<cr>
-nnoremap <leader>ko <cmd> Startify <cr>
+nnoremap <leader>ko <cmd>Startify<cr>
 nnoremap <Tab><Tab> <cmd>Telescope buffers<cr>
 noremap <c-p> <cmd>Telescope find_files<CR>
 nnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
