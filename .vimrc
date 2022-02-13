@@ -50,14 +50,10 @@ set nowritebackup
 set smarttab
 set nocompatible
 set cindent
-" set nowrap
 set tabstop=2
 set softtabstop=2
 set noswapfile
 set shiftwidth=2
-
-" set hlsearch
-" set shiftwidth=2
 set expandtab
 set cursorline
 au FocusLost * silent! wa
@@ -91,6 +87,11 @@ lua << EOF
 
 require('telescope')
   .setup{ 
+    pickers = {
+      find_files = {
+        hidden = true
+      }
+    },
     defaults = { file_ignore_patterns = {"node_modules", "build", "gradle", "ios"} },
     extensions = { 
       project = {}
@@ -107,13 +108,8 @@ require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,
     custom_captures = {
-      -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
-      ["foo.bar"] = "Identifier",
+
     },
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
   },
 }
@@ -123,7 +119,6 @@ EOF
 
 " colors
 
-" colorscheme janah
 if (has("termguicolors"))
  set termguicolors
 endif
@@ -135,40 +130,35 @@ let g:lightline = { 'colorscheme': 'darculaOriginal' }
 
 " end colors
 
-nmap <leader>l :wall<cr>
-
-" function EscActions()
-"  call feedkeys( ":nohlsearch\<CR>" )
-"   wall
-" endfunction
-
-" nnoremap <Esc><Esc> :call EscActions() <cr>
 
 set autowriteall
 
 autocmd BufNewFile,BufRead .eslintrc set syntax=json
 autocmd BufNewFile,BufRead *.js set syntax=typescriptreact
 
-let b:ale_fixers = {
+
+let g:ale_fixers = {
  \ 'typescript': ['eslint'],
  \ 'javascript': ['eslint'],
  \ 'typescriptreact': ['eslint'],
  \ 'go': ['golangci-lint']
  \ }
 
-let b:ale_linters = {
+let g:ale_linters = {
  \ 'typescript': ['eslint'],
  \ 'javascript': ['eslint'],
  \ 'typescriptreact': ['eslint'],
  \ 'go': ['golangci-lint']
  \ }
 
-""let g:ale_disable_lsp = 1
+
+let g:ale_disable_lsp = 1
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '--'
 let g:ale_fix_on_save = 1
 let g:ale_javascript_eslint_executable = 'eslint_d'
-let g:ale_javascript_eslint_use_global = 1
+let g:ale_javascript_eslint_use_global = 0
+let g:ale_lint_on_save = 1
 
 highlight ALEError ctermbg=none gui=underline guisp=red
 
@@ -183,26 +173,18 @@ if executable('pyls')
 endif
 
 
-" inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-" inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
-
-
 set guifont=DroidSansMono\ Nerd\ Font:h11
 
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-nnoremap <leader>ko :lua require'telescope'.extensions.project.project{}<cr>
-
+" nnoremap <leader>ko :lua require'telescope'.extensions.project.project{}<cr>
+nnoremap <leader>ko <cmd> Startify <cr>
 nnoremap <Tab><Tab> <cmd>Telescope buffers<cr>
 noremap <c-p> <cmd>Telescope find_files<CR>
 nnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
-
-
-
-
+nmap <leader>l :ALEFix<cr>
 
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ale#enabled = 1
@@ -212,7 +194,6 @@ let g:go_highlight_methods = 1
 let g:go_highlight_functions = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
-
 
 
 let g:startify_lists = [
