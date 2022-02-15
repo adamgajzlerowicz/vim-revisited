@@ -127,7 +127,6 @@ syntax enable
 colorscheme darcula
 let g:lightline = { 'colorscheme': 'darculaOriginal' }
 
-
 " end colors
 
 
@@ -141,18 +140,19 @@ let g:ale_fixers = {
  \ 'typescript': ['eslint'],
  \ 'javascript': ['eslint'],
  \ 'typescriptreact': ['eslint'],
- \ 'go': ['golangci-lint']
+ \ 'go': ['gofumpt', 'goimports', 'golines'],
  \ }
+
 
 let g:ale_linters = {
  \ 'typescript': ['eslint'],
  \ 'javascript': ['eslint'],
  \ 'typescriptreact': ['eslint'],
- \ 'go': ['golangci-lint']
+ \ 'go': ['gofumpt', 'goimports', 'golines', 'golangci-lint'],
  \ }
 
 
-let g:ale_disable_lsp = 1
+" let g:ale_disable_lsp = 1
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '--'
 let g:ale_fix_on_save = 1
@@ -183,6 +183,9 @@ noremap <c-p> <cmd>Telescope find_files<CR>
 nnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
 nmap <leader>l :ALEFix<cr>
 
+nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+
+
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ale#enabled = 1
 
@@ -191,6 +194,8 @@ let g:go_highlight_methods = 1
 let g:go_highlight_functions = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
+let g:ale_go_golangci_lint_options = "-c ~/projects/cmp-main/.golangci.yml"
+let g:ale_go_golangci_lint_package = 1
 
 
 let g:startify_lists = [
