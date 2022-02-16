@@ -1,6 +1,5 @@
 call plug#begin('~/.vim/plugged')
 
-Plug 'scrooloose/nerdcommenter'
 Plug 'mhinz/vim-startify'
 Plug 'morhetz/gruvbox'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -34,6 +33,7 @@ Plug 'akinsho/toggleterm.nvim'
 Plug 'joshdick/onedark.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'liuchengxu/vista.vim'
+Plug 'tpope/vim-commentary'
 
 
 call plug#end()
@@ -61,14 +61,11 @@ let mapleader=" "
 
 
 imap jj <Esc>
-map <leader>xx <plug>NERDCommenterToggle
 nmap gd :LspDefinition <cr>
-nmap gu :LspReferences <cr>
+nmap gd :LspDefinition <cr>
+nmap gk :LspTypeDefinition <cr>
 imap <c-space> <Plug>(asyncomplete_force_refresh)
-" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-" inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
-highlight lspReference ctermfg=white guifg=white ctermbg=black guibg=black
+" highlight lspReference ctermfg=white guifg=white ctermbg=black guibg=black
 
 
 function HandleOpen()
@@ -220,3 +217,8 @@ let g:startify_session_dir = '~/.config/nvim/session'
 nmap <leader>o :Startify<cr>
 
 
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
