@@ -34,6 +34,7 @@ Plug 'joshdick/onedark.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'liuchengxu/vista.vim'
 Plug 'tpope/vim-commentary'
+Plug 'sbdchd/neoformat'
 
 
 call plug#end()
@@ -58,6 +59,7 @@ set expandtab
 set cursorline
 au FocusLost * silent! wa
 let mapleader=" "
+set nowrap
 
 
 imap jj <Esc>
@@ -71,7 +73,7 @@ imap <c-space> <Plug>(asyncomplete_force_refresh)
 function HandleOpen()
   if exists("g:NERDTree") && g:NERDTree.IsOpen()
     execute 'NERDTreeClose'
-  else 
+  else
     execute 'NERDTreeFind'
   endif
 endfunction
@@ -83,14 +85,14 @@ nmap <S-Tab> :call HandleOpen() <CR>
 lua << EOF
 
 require('telescope')
-  .setup{ 
+  .setup{
     pickers = {
       find_files = {
         hidden = true
       }
     },
     defaults = { file_ignore_patterns = {"node_modules", "build", "gradle", "ios"} },
-    extensions = { 
+    extensions = {
       project = {}
     }
   }
@@ -114,17 +116,7 @@ require'nvim-treesitter.configs'.setup {
 EOF
 
 
-" colors
-
-if (has("termguicolors"))
- set termguicolors
-endif
-
 syntax enable
-colorscheme darcula
-let g:lightline = { 'colorscheme': 'darculaOriginal' }
-
-" end colors
 
 
 set autowriteall
@@ -186,7 +178,7 @@ nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ale#enabled = 1
 
-let g:go_highlight_structs = 1 
+let g:go_highlight_structs = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_functions = 1
 let g:go_highlight_operators = 1
@@ -214,7 +206,8 @@ let g:startify_enable_special = 0
 let g:startify_session_dir = '~/.config/nvim/session'
 
 
-nmap <leader>o :Startify<cr>
+
+# nmap <leader>o :Startify<cr>
 
 
 imap <c-space> <Plug>(asyncomplete_force_refresh)
@@ -222,3 +215,8 @@ inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
 autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+
+let g:neoformat_try_node_exe = 1
+autocmd BufWritePre *.js Neoformat
+autocmd BufWritePre *.ts Neoformat
+autocmd BufWritePre *.tsx Neoformat
