@@ -35,6 +35,7 @@ Plug 'sheerun/vim-polyglot'
 Plug 'liuchengxu/vista.vim'
 Plug 'tpope/vim-commentary'
 Plug 'sbdchd/neoformat'
+Plug 'jodosha/vim-godebug'
 
 
 call plug#end()
@@ -67,7 +68,7 @@ nmap gd :LspDefinition <cr>
 nmap gd :LspDefinition <cr>
 nmap gk :LspTypeDefinition <cr>
 imap <c-space> <Plug>(asyncomplete_force_refresh)
-" highlight lspReference ctermfg=white guifg=white ctermbg=black guibg=black
+nnoremap <leader-w> :wall <cr>
 
 
 function HandleOpen()
@@ -80,7 +81,6 @@ endfunction
 
 nmap <S-Tab> :call HandleOpen() <CR>
 
-" let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 
 lua << EOF
 
@@ -93,8 +93,7 @@ require('telescope')
     },
     defaults = { file_ignore_patterns = {"node_modules", "build", "gradle", "ios"} },
     extensions = {
-      project = {}
-    }
+      project = {} }
   }
 
 require'telescope'.load_extension('project')
@@ -170,7 +169,7 @@ nnoremap <leader>ko <cmd>Startify<cr>
 nnoremap <Tab><Tab> <cmd>Telescope buffers<cr>
 noremap <c-p> <cmd>Telescope find_files<CR>
 nnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
-nmap <leader>l :ALEFix<cr>
+nmap <leader>l :wall<cr>
 
 nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
 
@@ -207,9 +206,6 @@ let g:startify_session_dir = '~/.config/nvim/session'
 
 
 
-# nmap <leader>o :Startify<cr>
-
-
 imap <c-space> <Plug>(asyncomplete_force_refresh)
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
@@ -220,3 +216,24 @@ let g:neoformat_try_node_exe = 1
 autocmd BufWritePre *.js Neoformat
 autocmd BufWritePre *.ts Neoformat
 autocmd BufWritePre *.tsx Neoformat
+
+
+
+function! s:Saving_scroll(cmd)
+  let save_scroll = &scroll
+  execute 'normal! ' . a:cmd
+  let &scroll = save_scroll
+endfunction
+nnoremap <C-J> :call <SID>Saving_scroll("1<C-V><C-D>")<CR>
+vnoremap <C-J> <Esc>:call <SID>Saving_scroll("gv1<C-V><C-D>")<CR>
+nnoremap <C-K> :call <SID>Saving_scroll("1<C-V><C-U>")<CR>
+vnoremap <C-K> <Esc>:call <SID>Saving_scroll("gv1<C-V><C-U>")<CR>
+
+
+colorscheme gruvbox
+
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
