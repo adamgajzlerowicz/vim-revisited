@@ -37,7 +37,6 @@ Plug 'tpope/vim-commentary'
 Plug 'sbdchd/neoformat'
 Plug 'jodosha/vim-godebug'
 
-
 call plug#end()
 
 set encoding=UTF-8
@@ -64,11 +63,15 @@ set nowrap
 
 
 imap jj <Esc>
+" nnoremap <Esc><Esc> :nohl <cr>
 nmap gd :LspDefinition <cr>
 nmap gd :LspDefinition <cr>
 nmap gk :LspTypeDefinition <cr>
 imap <c-space> <Plug>(asyncomplete_force_refresh)
 nnoremap <leader-w> :wall <cr>
+nnoremap <leader-k> :LspHover <cr>
+nnoremap <leader-u> :LspReferences <cr>
+
 
 
 function HandleOpen()
@@ -91,7 +94,7 @@ require('telescope')
         hidden = true
       }
     },
-    defaults = { file_ignore_patterns = {"node_modules", "build", "gradle", "ios"} },
+    defaults = { file_ignore_patterns = {"node_modules", "build"} },
     extensions = {
       project = {} }
   }
@@ -147,6 +150,8 @@ let g:ale_fix_on_save = 1
 let g:ale_javascript_eslint_executable = 'eslint_d'
 let g:ale_javascript_eslint_use_global = 0
 let g:ale_lint_on_save = 1
+let g:ale_lint_on_text_changed = 0
+let g:ale_lint_on_enter = 0
 
 highlight ALEError ctermbg=none gui=underline guisp=red
 
@@ -211,6 +216,8 @@ inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
 autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
 
 let g:neoformat_try_node_exe = 1
 autocmd BufWritePre *.js Neoformat
